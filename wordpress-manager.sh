@@ -380,7 +380,7 @@ function wordpress-next-questions() {
         rm -rf /var/www/html
     ;;
     5) # Update the script
-        curl -o /var/www/wordpress-manager.sh https://raw.githubusercontent.com/complexorganizations/wordpress-manager/master/wordpress-manager.sh
+        curl -o /var/www/wordpress-manager.sh https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh
         chmod +x /var/www/wordpress-manager.sh || exit
     ;;
     esac
