@@ -1,55 +1,49 @@
 #!/bin/bash
 
-# Require script to be run as root (or with sudo)
+# Require script to be run as root
 function super-user-check() {
-    if [ "$EUID" -ne 0 ]; then
-        echo "You need to run this script as super user."
-        exit
-    fi
+  if [ "$EUID" -ne 0 ]; then
+    echo "You need to run this script as super user."
+    exit
+  fi
 }
 
 # Check for root
 super-user-check
 
-# Pre-Checks
-function check-system-requirements() {
-    # System requirements (uname)
-    if ! [ -x "$(command -v uname)" ]; then
-        echo "Error: uname  is not installed, please install uname." >&2
-        exit
-    fi
-    # System requirements (curl)
-    if ! [ -x "$(command -v curl)" ]; then
-        echo "Error: curl  is not installed, please install curl." >&2
-        exit
-    fi
-    # System requirements (jq)
-    if ! [ -x "$(command -v jq)" ]; then
-        echo "Error: jq  is not installed, please install jq." >&2
-        exit
-    fi
-    # System requirements (openssl)
-    if ! [ -x "$(command -v openssl)" ]; then
-        echo "Error: openssl  is not installed, please install openssl." >&2
-        exit
-    fi
-}
-
-# Run the function and check for requirements
-check-system-requirements
-
 # Detect Operating System
 function dist-check() {
-    # shellcheck disable=SC1090
-    if [ -e /etc/os-release ]; then
-        # shellcheck disable=SC1091
-        source /etc/os-release
-        DISTRO=$ID
-    fi
+  if [ -e /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    source /etc/os-release
+    DISTRO=$ID
+    DISTRO_VERSION=$VERSION_ID
+  fi
 }
 
 # Check Operating System
 dist-check
+
+# Pre-Checks system requirements
+function installing-system-requirements() {
+  if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
+    if { ! [ -x "$(command -v curl)" ] || ! [ -x "$(command -v iptables)" ] || ! [ -x "$(command -v bc)" ] || ! [ -x "$(command -v jq)" ] || ! [ -x "$(command -v sed)" ] || ! [ -x "$(command -v zip)" ] || ! [ -x "$(command -v unzip)" ] || ! [ -x "$(command -v grep)" ] || ! [ -x "$(command -v awk)" ] || ! [ -x "$(command -v ip)" ]; }; then
+      if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ]; }; then
+        apt-get update && apt-get install iptables curl coreutils bc jq sed e2fsprogs zip unzip grep gawk iproute2 -y
+      elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
+        yum update -y && yum install epel-release iptables curl coreutils bc jq sed e2fsprogs zip unzip grep gawk iproute2 -y
+      elif { [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ]; }; then
+        pacman -Syu --noconfirm iptables curl bc jq sed zip unzip grep gawk iproute2
+      elif [ "$DISTRO" == "alpine" ]; then
+        apk update && apk add iptables curl bc jq sed zip unzip grep gawk iproute2
+      fi
+    fi
+  else
+    echo "Error: $DISTRO not supported."
+    exit
+  fi
+}
+
 
 if [ ! -f "/var/www/wp-config.php" ]; then
 
