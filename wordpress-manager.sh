@@ -109,20 +109,6 @@ if [ ! -f "/var/www/wp-config.php" ]; then
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
       rm -f /etc/nginx/sites-available/default
-      echo "server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.php;
-    server_name _;
-    location / {
-      try_files $uri $uri/ /index.php?$args;
-    }
-    location ~ \.php$ {
-      include snippets/fastcgi-php.conf;
-      fastcgi_pass unix:/run/php/php7.3-fpm.sock;
-    }
-}" >>/etc/nginx/sites-available/default
     fi
     if pgrep systemd-journal; then
       systemctl enable nginx
@@ -197,75 +183,10 @@ if [ ! -f "/var/www/wp-config.php" ]; then
       sed -i "s|username_here|$MARIADB_USER|" /var/www/wp-config.php
       sed -i "s|password_here|$MARIADB_PASSWORD|" /var/www/wp-config.php
     fi
-    echo "/* Media Trash. */
-define( 'MEDIA_TRASH', true );
-
-/* Multisite. */
-define( 'WP_ALLOW_MULTISITE', false );
-
-/* WordPress debug mode for developers. */
-define( 'WP_DEBUG',         true );
-define( 'WP_DEBUG_LOG',     true );
-define( 'WP_DEBUG_DISPLAY', true );
-define( 'SCRIPT_DEBUG',     true );
-define( 'SAVEQUERIES',      true );
-
-/* WordPress Cache */
-define( 'WP_CACHE', true );
-
-/* Compression */
-define( 'COMPRESS_CSS',        true );
-define( 'COMPRESS_SCRIPTS',    true );
-define( 'CONCATENATE_SCRIPTS', true );
-define( 'ENFORCE_GZIP',        true );
-
-/* FTP */
-define( 'FTP_SSL', true );
-
-/* CRON */
-define( 'DISABLE_WP_CRON',      'true' );
-define( 'ALTERNATE_WP_CRON',    'true' );
-
-/* Updates */
-define( 'WP_AUTO_UPDATE_CORE', 'minor' );
-define( 'DISALLOW_FILE_MODS', false );
-define( 'DISALLOW_FILE_EDIT', false );" >>/var/www/wp-config.php
   }
 
   wp-config
-
-  function minify-output() {
-    echo "/* Remove Query String */
-function _remove_script_version( $src ){
-    $parts = explode( '?ver', $src );
-    return $parts[0];
-}
-
-add_filter( 'script_loader_src', '_remove_script_version', 15, 1 );
-add_filter( 'style_loader_src', '_remove_script_version', 15, 1 );
-
-/* Minify HTML */
-add_action('get_header', 'gkp_html_minify_start');
-function gkp_html_minify_start()
-{
-    ob_start('gkp_html_minyfy_finish');
-}
-function gkp_html_minyfy_finish($html)
-{
-    $html = preg_replace('/<!--(?!s*(?:[if [^]]+]|!|>))(?:(?!-->).)*-->/s', '', $html);
-    $html = str_replace(array(
-        "\r\n",
-        "\r",
-        "\n",
-        "\t"
-    ), '', $html);
-    while (stristr($html, '  '))
-        $html = str_replace('  ', ' ', $html);
-    return $html;
-}" >>/var/www/html/wp-content/themes/function.php
-    # end of function
-  }
-
+ 
   # Installs and setups lets-encrypt
   function lets-encrypt() {
     certbot --nginx
