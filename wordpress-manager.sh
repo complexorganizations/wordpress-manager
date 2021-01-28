@@ -73,7 +73,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
       mv /tmp/wordpress/* /var/www/html
       rm /tmp/latest.tar.gz
       rm -rf /tmp/wordpress
-      chown www-data:www-data -R *
+      # chown www-data:www-data -R *
       find /var/www/ -type d -exec chmod 755 {} \;
       find /var/www/ -type f -exec chmod 644 {} \;
       chmod 660 wp-config.php
