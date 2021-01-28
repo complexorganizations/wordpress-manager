@@ -88,9 +88,9 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   function configure-redis() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|# bind 127.0.0.1;|bind 127.0.0.1;|" /etc/redis/redis.conf
-      curl https://downloads.wordpress.org/plugin/redis-cache.1.5.8.zip --create-dirs -o /var/www/html/wp-content/plugins/redis-cache.1.5.8.zip
-      unzip /var/www/html/wp-content/plugins/redis-cache.1.5.8.zip
-      rm -f /var/www/html/wp-content/plugins/redis-cache.1.5.8.zip
+      curl https://downloads.wordpress.org/plugin/redis-cache.2.0.17.zip --create-dirs -o /var/www/html/wp-content/plugins/redis-cache.2.0.17.zip
+      unzip /var/www/html/wp-content/plugins/redis-cache.2.0.17.zip
+      rm -f /var/www/html/wp-content/plugins/redis-cache.2.0.17.zip
     fi
     if pgrep systemd-journal; then
       systemctl enable redis
