@@ -1,4 +1,5 @@
 #!/bin/bash
+# https://github.com/complexorganizations/wordpress-manager
 
 # Require script to be run as root
 function super-user-check() {
@@ -17,7 +18,6 @@ function dist-check() {
     # shellcheck disable=SC1091
     source /etc/os-release
     DISTRO=$ID
-    DISTRO_VERSION=$VERSION_ID
   fi
 }
 
@@ -49,15 +49,13 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   # Install Wordpress Server
   function install-wordpress() {
     # Installation begins here
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ]; }; then
       apt-get update
       apt-get install nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis certbot python-certbot-nginx -y
-    fi
-    if [ "$DISTRO" == "arch" ]; then
+    elif [ "$DISTRO" == "arch" ]; then
       pacman -Syu
       pacman -Syu --noconfirm nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis certbot certbot-nginx
-    fi
-    if ([ "$DISTRO" == "centos" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "rhel" ]); then
+    elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
       yum update -y
       yum install nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis certbot certbot-nginx -y
     fi
@@ -68,7 +66,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
 
   # Configure Wordpress
   function configure-wordpress() {
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       rm -f /var/www/html/index.nginx-debian.html
       curl https://wordpress.org/latest.tar.gz -o /tmp/latest.tar.gz
       tar xf /tmp/latest.tar.gz
@@ -88,7 +86,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
 
   # configure Redis
   function configure-redis() {
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|# bind 127.0.0.1;|bind 127.0.0.1;|" /etc/redis/redis.conf
       curl https://downloads.wordpress.org/plugin/redis-cache.1.5.8.zip --create-dirs -o /var/www/html/wp-content/plugins/redis-cache.1.5.8.zip
       unzip /var/www/html/wp-content/plugins/redis-cache.1.5.8.zip
@@ -108,7 +106,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
 
   # Configure Nginx
   function configure-nginx() {
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
       rm -f /etc/nginx/sites-available/default
       echo "server {
@@ -143,13 +141,11 @@ if [ ! -f "/var/www/wp-config.php" ]; then
     MARIADB_DATABASE="$(openssl rand -base64 15)"
     MARIADB_USER="$(openssl rand -base64 15)"
     MARIADB_PASSWORD="$(openssl rand -base64 20)"
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ]; }; then
       apt-get install mariadb-server -y
-    fi
-    if [ "$DISTRO" == "arch" ]; then
+    elif [ "$DISTRO" == "arch" ]; then
       pacman -Syu --noconfirm mariadb
-    fi
-    if ([ "$DISTRO" == "centos" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "rhel" ]); then
+    elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
       yum install mariadb -y
     fi
     # https://cloud.google.com/sql/docs/mysql/connect-external-app
@@ -167,7 +163,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   mysql-install
 
   function configure-php() {
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 32M|" /etc/php/7.3/fpm/php.ini
       sed -i "s|max_file_uploads = 20|max_file_uploads = 25|" /etc/php/7.3/fpm/php.ini
     fi
@@ -184,7 +180,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
 
   # wp-cli
   function wp-cli() {
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar --create-dirs -o /usr/local/bin/wp/wp-cli.phar
       chmod +x /usr/local/bin/wp/wp-cli.phar
       php /usr/local/bin/wp/wp-cli.phar --info
@@ -195,7 +191,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   wp-cli
 
   function wp-config() {
-    if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]); then
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       mv /var/www/html/wp-config-sample.php /var/www/wp-config.php
       sed -i "s|database_name_here|$MARIADB_DATABASE|" /var/www/wp-config.php
       sed -i "s|username_here|$MARIADB_USER|" /var/www/wp-config.php
@@ -355,13 +351,11 @@ else
         php7.3-fpm disable
         php7.3-fpm stop
       fi
-      if ([ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
+      if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ]; }; then
         apt-get remove --purge nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis certbot python-certbot-nginx -y
-      fi
-      if [ "$DISTRO" == "arch" ]; then
+      elif [ "$DISTRO" == "arch" ]; then
         pacman -Rs nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis
-      fi
-      if ([ "$DISTRO" == "centos" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "rhel" ]); then
+      elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
         yum remove --purge nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis -y
       fi
       rm -f /usr/local/bin/wp/wp-cli.phar
