@@ -137,10 +137,10 @@ if [ ! -f "/var/www/wp-config.php" ]; then
     # https://cloud.google.com/sql/docs/mysql/connect-external-app
     mysql_secure_installation
     mariadb
-    CREATE DATABASE $MARIADB_DATABASE
-    CREATE USER $($MARIADB_USER)@$(localhost) IDENTIFIED BY '$MARIADB_PASSWORD'
-    ALTER USER $($MARIADB_USER)@$(localhost) IDENTIFIED WITH mysql_native_password BY '$MARIADB_PASSWORD'
-    GRANT ALL ON $MARIADB_DATABASE.* TO $($MARIADB_USER)@$(localhost)
+    CREATE DATABASE "$MARIADB_DATABASE"
+    CREATE USER "$MARIADB_USER"@localhost IDENTIFIED BY "$MARIADB_PASSWORD"
+    ALTER USER "$MARIADB_USER"@localhost IDENTIFIED WITH mysql_native_password BY "$MARIADB_PASSWORD"
+    GRANT ALL ON "$MARIADB_DATABASE".* TO "$MARIADB_USER"@localhost
     FLUSH PRIVILEGES
     exit
   }
