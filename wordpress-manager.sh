@@ -109,6 +109,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
       rm -f /etc/nginx/sites-available/default
+      # shellcheck disable=SC2154,SC2154
       echo "server {	
     listen 80 default_server;	
     listen [::]:80 default_server;	
