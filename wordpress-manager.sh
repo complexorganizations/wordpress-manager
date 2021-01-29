@@ -283,13 +283,15 @@ else
       rm -f /etc/nginx/sites-available/default
       rm -f /etc/nginx/nginx.conf
       rm -f /var/www/wp-config.php
-      rm -f /var/www/wordpress-manager.sh
       rm -rf /etc/nginx
       rm -rf /var/www/html
       ;;
     5) # Update the script
-      curl -o /var/www/wordpress-manager.sh https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh
-      chmod +x /var/www/wordpress-manager.sh || exit
+      CURRENT_FILE_PATH="$(realpath "$0")"
+      if [ -f "$CURRENT_FILE_PATH" ]; then
+        curl -o "$CURRENT_FILE_PATH" https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh
+        chmod +x "$CURRENT_FILE_PATH" || exit
+      fi
       ;;
     esac
   }
