@@ -2,7 +2,8 @@
 
 ---
 ### Features
-- Install Wordpress on a server
+
+- Install, Manage Wordpress Installation
 
 ---
 ### Author
