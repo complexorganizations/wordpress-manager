@@ -2,7 +2,7 @@
 
 ---
 ### Features
-- Install WireGuard on a server
+- Install Wordpress on a server
 
 ---
 ### Author
@@ -15,4 +15,4 @@
 
 Copyright © [Prajwal](https://github.com/prajwal-koirala)
 
-This project is MIT licensed.
+This project is unlicensed.
