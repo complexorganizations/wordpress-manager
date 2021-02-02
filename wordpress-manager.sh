@@ -44,6 +44,7 @@ function installing-system-requirements() {
   fi
 }
 
+# Global variable
 WPCONFIG="/var/www/wp-config.php"
 WORDPRESS_DOWNLOAD_URL="https://wordpress.org/latest.tar.gz"
 REDIS_PLUGIN_URL="https://downloads.wordpress.org/plugin/redis-cache.2.0.17.zip"
@@ -60,7 +61,6 @@ if [ ! -f "$WPCONFIG" ]; then
 
   # Install Wordpress Server
   function install-wordpress() {
-    # Installation begins here
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ]; }; then
       apt-get update
       apt-get install nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis certbot python-certbot-nginx -y
