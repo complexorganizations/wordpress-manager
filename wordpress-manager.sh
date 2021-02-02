@@ -308,7 +308,7 @@ else
         yum remove --purge nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis -y
       fi
       rm -f $WP_CLI_CONFIG_PATH
-      rm -f /etc/nginx/sites-available/default
+      rm -f $NGINX_SITE_DEFAULT_CONFIG
       rm -f $NGINX_GLOBAL_DEFAULT_CONFIG
       rm -f $NGINX_SITE_DEFAULT_CONFIG
       rm -f $WPCONFIG
