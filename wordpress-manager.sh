@@ -44,7 +44,6 @@ function installing-system-requirements() {
   fi
 }
 
-# Global variable
 WPCONFIG="/var/www/wp-config.php"
 WORDPRESS_DOWNLOAD_URL="https://wordpress.org/latest.tar.gz"
 REDIS_PLUGIN_URL="https://downloads.wordpress.org/plugin/redis-cache.2.0.17.zip"
@@ -56,11 +55,13 @@ WP_CLI_UPDATE_URL="https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar
 WP_CLI_CONFIG_PATH="/usr/local/bin/wp/wp-cli.phar"
 TCP_BBR_WORDPRESS_PATH="/etc/sysctl.d/wordpress.conf"
 WORDPRESS_MANAGER_URL="https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh"
+REDIS_CONFIG_PATH="/etc/redis/redis.conf"
 
 if [ ! -f "$WPCONFIG" ]; then
 
   # Install Wordpress Server
   function install-wordpress() {
+    # Installation begins here
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ]; }; then
       apt-get update
       apt-get install nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis certbot python-certbot-nginx -y
@@ -98,7 +99,7 @@ if [ ! -f "$WPCONFIG" ]; then
   # configure Redis
   function configure-redis() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
-      sed -i "s|# bind 127.0.0.1;|bind 127.0.0.1;|" /etc/redis/redis.conf
+      sed -i "s|# bind 127.0.0.1;|bind 127.0.0.1;|" $REDIS_CONFIG_PATH
       curl $REDIS_PLUGIN_URL --create-dirs -o $REDIS_PLUGIN_PATH
       unzip $REDIS_PLUGIN_PATH
       rm -f $REDIS_PLUGIN_PATH
