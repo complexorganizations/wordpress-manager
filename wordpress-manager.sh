@@ -316,7 +316,7 @@ else
     5) # Update the script
       CURRENT_FILE_PATH="$(realpath "$0")"
       if [ -f "$CURRENT_FILE_PATH" ]; then
-        curl -o "$CURRENT_FILE_PATH" https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh
+        curl -o "$CURRENT_FILE_PATH" $WORDPRESS_MANAGER_URL
         chmod +x "$CURRENT_FILE_PATH" || exit
       fi
       ;;
