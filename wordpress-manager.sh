@@ -44,7 +44,19 @@ function installing-system-requirements() {
   fi
 }
 
-if [ ! -f "/var/www/wp-config.php" ]; then
+WPCONFIG="/var/www/wp-config.php"
+WORDPRESS_DOWNLOAD_URL="https://wordpress.org/latest.tar.gz"
+REDIS_PLUGIN_URL="https://downloads.wordpress.org/plugin/redis-cache.2.0.17.zip"
+REDIS_PLUGIN_PATH="/var/www/html/wp-content/plugins/redis-cache.2.0.17.zip"
+NGINX_SITE_DEFAULT_CONFIG="/etc/nginx/sites-available/default"
+NGINX_GLOBAL_DEFAULT_CONFIG="/etc/nginx/nginx.conf"
+PHP_INI_CONFIG="/etc/php/7.3/fpm/php.ini"
+WP_CLI_UPDATE_URL="https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+WP_CLI_CONFIG_PATH="/usr/local/bin/wp/wp-cli.phar"
+TCP_BBR_WORDPRESS_PATH="/etc/sysctl.d/wordpress.conf"
+WORDPRESS_MANAGER_URL="https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh"
+
+if [ ! -f "$WPCONFIG" ]; then
 
   # Install Wordpress Server
   function install-wordpress() {
@@ -67,8 +79,7 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   # Configure Wordpress
   function configure-wordpress() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
-      rm -f /var/www/html/index.nginx-debian.html
-      curl https://wordpress.org/latest.tar.gz -o /tmp/latest.tar.gz
+      curl $WORDPRESS_DOWNLOAD_URL -o /tmp/latest.tar.gz
       tar xf /tmp/latest.tar.gz
       mv /tmp/wordpress/* /var/www/html
       rm /tmp/latest.tar.gz
@@ -88,9 +99,9 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   function configure-redis() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
       sed -i "s|# bind 127.0.0.1;|bind 127.0.0.1;|" /etc/redis/redis.conf
-      curl https://downloads.wordpress.org/plugin/redis-cache.2.0.17.zip --create-dirs -o /var/www/html/wp-content/plugins/redis-cache.2.0.17.zip
-      unzip /var/www/html/wp-content/plugins/redis-cache.2.0.17.zip
-      rm -f /var/www/html/wp-content/plugins/redis-cache.2.0.17.zip
+      curl $REDIS_PLUGIN_URL --create-dirs -o $REDIS_PLUGIN_PATH
+      unzip $REDIS_PLUGIN_PATH
+      rm -f $REDIS_PLUGIN_PATH
     fi
     if pgrep systemd-journal; then
       systemctl enable redis
@@ -107,23 +118,24 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   # Configure Nginx
   function configure-nginx() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
-      sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
-      rm -f /etc/nginx/sites-available/default
+      rm -f /var/www/html/index.nginx-debian.html
+      sed -i "s|# server_tokens off;|server_tokens off;|" $NGINX_GLOBAL_DEFAULT_CONFIG
+      rm -f $NGINX_SITE_DEFAULT_CONFIG
       # shellcheck disable=SC2154,SC2154
-      echo "server {	
-    listen 80 default_server;	
-    listen [::]:80 default_server;	
-    root /var/www/html;	
-    index index.php;	
-    server_name _;	
-    location / {	
-      try_files $uri $uri/ /index.php?$args;	
-    }	
-    location ~ \.php$ {	
-      include snippets/fastcgi-php.conf;	
-      fastcgi_pass unix:/run/php/php7.3-fpm.sock;	
-    }	
-}" >>/etc/nginx/sites-available/default
+      echo "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.php;
+    server_name _;
+    location / {
+      try_files $uri $uri/ /index.php?$args;
+    }
+    location ~ \.php$ {
+      include snippets/fastcgi-php.conf;
+      fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+    }
+}" >>$NGINX_SITE_DEFAULT_CONFIG
     fi
     if pgrep systemd-journal; then
       systemctl enable nginx
@@ -165,8 +177,8 @@ if [ ! -f "/var/www/wp-config.php" ]; then
 
   function configure-php() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
-      sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 32M|" /etc/php/7.3/fpm/php.ini
-      sed -i "s|max_file_uploads = 20|max_file_uploads = 25|" /etc/php/7.3/fpm/php.ini
+      sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 32M|" $PHP_INI_CONFIG
+      sed -i "s|max_file_uploads = 20|max_file_uploads = 25|" $PHP_INI_CONFIG
     fi
     if pgrep systemd-journal; then
       systemctl enable php7.3-fpm
@@ -182,9 +194,9 @@ if [ ! -f "/var/www/wp-config.php" ]; then
   # wp-cli
   function wp-cli() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
-      curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar --create-dirs -o /usr/local/bin/wp/wp-cli.phar
-      chmod +x /usr/local/bin/wp/wp-cli.phar
-      php /usr/local/bin/wp/wp-cli.phar --info
+      curl $WP_CLI_UPDATE_URL --create-dirs -o $WP_CLI_CONFIG_PATH
+      chmod +x $WP_CLI_CONFIG_PATH
+      php $WP_CLI_CONFIG_PATH --info
     fi
   }
 
@@ -193,15 +205,15 @@ if [ ! -f "/var/www/wp-config.php" ]; then
 
   function wp-config() {
     if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
-      mv /var/www/html/wp-config-sample.php /var/www/wp-config.php
-      sed -i "s|database_name_here|$MARIADB_DATABASE|" /var/www/wp-config.php
-      sed -i "s|username_here|$MARIADB_USER|" /var/www/wp-config.php
-      sed -i "s|password_here|$MARIADB_PASSWORD|" /var/www/wp-config.php
+      mv /var/www/html/wp-config-sample.php $WPCONFIG
+      sed -i "s|database_name_here|$MARIADB_DATABASE|" $WPCONFIG
+      sed -i "s|username_here|$MARIADB_USER|" $WPCONFIG
+      sed -i "s|password_here|$MARIADB_PASSWORD|" $WPCONFIG
     fi
   }
 
   wp-config
- 
+
   # Installs and setups lets-encrypt
   function lets-encrypt() {
     certbot --nginx
@@ -218,8 +230,8 @@ if [ ! -f "/var/www/wp-config.php" ]; then
     if (($(echo "$KERNEL_CURRENT_VERSION >= $KERNEL_VERSION_LIMIT" | bc -l))); then
       modprobe tcp_bbr
       echo "tcp_bbr" >>/etc/modules-load.d/modules.conf
-      echo "net.core.default_qdisc=fq" >>/etc/sysctl.d/shadowsocks.conf
-      echo "net.ipv4.tcp_congestion_control=bbr" >>/etc/sysctl.d/shadowsocks.conf
+      echo "net.core.default_qdisc=fq" >>$TCP_BBR_WORDPRESS_PATH
+      echo "net.ipv4.tcp_congestion_control=bbr" >>$TCP_BBR_WORDPRESS_PATH
       sysctl -p
     else
       echo "Error: Please update your kernel to 4.1 or higher" >&2
@@ -294,12 +306,11 @@ else
       elif { [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ]; }; then
         yum remove --purge nginx curl redis-server zip unzip php7.3-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis -y
       fi
-      rm -f /usr/local/bin/wp/wp-cli.phar
+      rm -f $WP_CLI_CONFIG_PATH
       rm -f /etc/nginx/sites-available/default
-      rm -f /etc/nginx/nginx.conf
-      rm -f /var/www/wp-config.php
-      rm -rf /etc/nginx
-      rm -rf /var/www/html
+      rm -f $NGINX_GLOBAL_DEFAULT_CONFIG
+      rm -f $NGINX_SITE_DEFAULT_CONFIG
+      rm -f $WPCONFIG
       ;;
     5) # Update the script
       CURRENT_FILE_PATH="$(realpath "$0")"
