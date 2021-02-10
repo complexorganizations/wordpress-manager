@@ -1,5 +1,7 @@
 <h1 align="center">Wordpress Manager</h1>
 
+##### Use [Ghost-Manager](https://github.com/complexorganizations/ghost-manager) instead, This repository is no longer maintained. ***Archived***
+
 ---
 ### What is WordPress ?
 WordPress is a free, open-source content management system written in PHP and combined with a database of MySQL or MariaDB. Apps include a plugin framework and a template system which is referred to as themes inside WordPress.
