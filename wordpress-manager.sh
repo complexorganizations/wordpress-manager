@@ -149,9 +149,6 @@ if [ ! -f "${WPCONFIG}" ]; then
 
   ## Function to install mysql
   function mysql-install() {
-    MARIADB_DATABASE="$(openssl rand -base64 15)"
-    MARIADB_USER="$(openssl rand -base64 15)"
-    MARIADB_PASSWORD="$(openssl rand -base64 20)"
     if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ]; }; then
       apt-get install mariadb-server -y
     elif [ "${DISTRO}" == "arch" ]; then
@@ -159,8 +156,11 @@ if [ ! -f "${WPCONFIG}" ]; then
     elif { [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
       yum install mariadb -y
     fi
-    # https://cloud.google.com/sql/docs/mysql/connect-external-app
     printf "n\n n\n y\n y\n y\n y\n" | mysql_secure_installation
+    # https://cloud.google.com/sql/docs/mysql/connect-external-app
+    MARIADB_DATABASE="$(openssl rand -base64 15)"
+    MARIADB_USER="$(openssl rand -base64 15)"
+    MARIADB_PASSWORD="$(openssl rand -base64 20)"
     mariadb -e "CREATE DATABASE \"${MARIADB_DATABASE}\";"
     mariadb -e "CREATE USER \"${MARIADB_USER}\"@localhost IDENTIFIED BY \"${MARIADB_PASSWORD}\";"
     mariadb -e "ALTER USER \"${MARIADB_USER}\"@localhost IDENTIFIED WITH mysql_native_password BY \"${MARIADB_PASSWORD}\";"
