@@ -81,7 +81,7 @@ if [ ! -f "${WPCONFIG}" ]; then
       curl ${WORDPRESS_DOWNLOAD_URL} -o /tmp/latest.tar.gz
       tar xf /tmp/latest.tar.gz -C /tmp/
       mv /tmp/wordpress/* /var/www/html
-      rm /tmp/latest.tar.gz
+      rm -f /tmp/latest.tar.gz
       rm -rf /tmp/wordpress
       # chown www-data:www-data -R *
       find /var/www/ -type d -exec chmod 755 {} \;
