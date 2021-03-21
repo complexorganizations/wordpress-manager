@@ -52,7 +52,6 @@ NGINX_SITE_DEFAULT_CONFIG="/etc/nginx/sites-available/default"
 NGINX_GLOBAL_DEFAULT_CONFIG="/etc/nginx/nginx.conf"
 WP_CLI_UPDATE_URL="https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
 WP_CLI_CONFIG_PATH="/usr/local/bin/wp/wp-cli.phar"
-TCP_BBR_WORDPRESS_PATH="/etc/sysctl.d/wordpress.conf"
 WORDPRESS_MANAGER_URL="https://raw.githubusercontent.com/complexorganizations/wordpress-manager/main/wordpress-manager.sh"
 REDIS_CONFIG_PATH="/etc/redis/redis.conf"
 
@@ -166,6 +165,9 @@ if [ ! -f "${WPCONFIG}" ]; then
     mariadb -e "CREATE USER \"${MARIADB_USER}\"@localhost IDENTIFIED BY \"${MARIADB_PASSWORD}\";"
     mariadb -e "ALTER USER \"${MARIADB_USER}\"@localhost IDENTIFIED WITH mysql_native_password BY \"${MARIADB_PASSWORD}\";"
     mariadb -e "GRANT ALL ON \"${MARIADB_DATABASE}\".* TO \"${MARIADB_USER}\"@localhost;"
+    echo "Database: ${MARIADB_DATABASE}"
+    echo "Username: ${MARIADB_USER}"
+    echo "Password: ${MARIADB_PASSWORD}"
   }
 
   ## run the function
