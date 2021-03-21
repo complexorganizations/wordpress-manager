@@ -79,7 +79,7 @@ if [ ! -f "${WPCONFIG}" ]; then
   function configure-wordpress() {
     if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ] || [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "manjaro" ] || [ "${DISTRO}" == "alpine" ]; }; then
       curl ${WORDPRESS_DOWNLOAD_URL} -o /tmp/latest.tar.gz
-      tar xf /tmp/latest.tar.gz -C /tmp/wordpress/
+      tar xf /tmp/latest.tar.gz -C /tmp/
       mv /tmp/wordpress/* /var/www/html
       rm /tmp/latest.tar.gz
       rm -rf /tmp/wordpress
