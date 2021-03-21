@@ -158,9 +158,9 @@ if [ ! -f "${WPCONFIG}" ]; then
     fi
     printf "n\n n\n y\n y\n y\n y\n" | mysql_secure_installation
     # https://cloud.google.com/sql/docs/mysql/connect-external-app
-    MARIADB_DATABASE="$(openssl rand -base64 15)"
-    MARIADB_USER="$(openssl rand -base64 15)"
-    MARIADB_PASSWORD="$(openssl rand -base64 20)"
+    MARIADB_DATABASE="$(openssl rand -hex 15)"
+    MARIADB_USER="$(openssl rand -hex 15)"
+    MARIADB_PASSWORD="$(openssl rand -hex 20)"
     mariadb -e "CREATE DATABASE \"${MARIADB_DATABASE}\";"
     mariadb -e "CREATE USER \"${MARIADB_USER}\"@localhost IDENTIFIED BY \"${MARIADB_PASSWORD}\";"
     mariadb -e "ALTER USER \"${MARIADB_USER}\"@localhost IDENTIFIED WITH mysql_native_password BY \"${MARIADB_PASSWORD}\";"
