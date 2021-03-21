@@ -158,13 +158,13 @@ if [ ! -f "${WPCONFIG}" ]; then
     fi
     printf "n\n n\n y\n y\n y\n y\n" | mysql_secure_installation
     # https://cloud.google.com/sql/docs/mysql/connect-external-app
-    MARIADB_DATABASE="$(openssl rand -hex 15)"
-    MARIADB_USER="$(openssl rand -hex 15)"
-    MARIADB_PASSWORD="$(openssl rand -hex 20)"
-    mariadb -e "CREATE DATABASE \"${MARIADB_DATABASE}\";"
-    mariadb -e "CREATE USER \"${MARIADB_USER}\"@localhost IDENTIFIED BY \"${MARIADB_PASSWORD}\";"
-    mariadb -e "ALTER USER \"${MARIADB_USER}\"@localhost IDENTIFIED WITH mysql_native_password BY \"${MARIADB_PASSWORD}\";"
-    mariadb -e "GRANT ALL ON \"${MARIADB_DATABASE}\".* TO \"${MARIADB_USER}\"@localhost;"
+    MARIADB_DATABASE="$(openssl rand -hex 5)"
+    MARIADB_USER="$(openssl rand -hex 5)"
+    MARIADB_PASSWORD="$(openssl rand -hex 15)"
+    mysql -e "CREATE DATABASE \"${MARIADB_DATABASE}\";"
+    mysql -e "CREATE USER \"${MARIADB_USER}\"@localhost IDENTIFIED BY \"${MARIADB_PASSWORD}\";"
+    mysql -e "ALTER USER \"${MARIADB_USER}\"@localhost IDENTIFIED WITH mysql_native_password BY \"${MARIADB_PASSWORD}\";"
+    mysql -e "GRANT ALL ON \"${MARIADB_DATABASE}\".* TO \"${MARIADB_USER}\"@localhost;"
     echo "Database: ${MARIADB_DATABASE}"
     echo "Username: ${MARIADB_USER}"
     echo "Password: ${MARIADB_PASSWORD}"
