@@ -33,7 +33,7 @@ function installing-system-requirements() {
       elif { [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
         yum update -y && yum install epel-release curl coreutils bc jq sed e2fsprogs zip unzip grep gawk iproute2 -y
       elif { [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "manjaro" ]; }; then
-        pacman -Syu --noconfirm curl bc jq sed zip unzip grep gawk iproute2
+        pacman -Syu --noconfirm --needed curl bc jq sed zip unzip grep gawk iproute2
       elif [ "${DISTRO}" == "alpine" ]; then
         apk update && apk add curl bc jq sed zip unzip grep gawk iproute2
       fi
@@ -65,7 +65,7 @@ if [ ! -f "${WPCONFIG}" ]; then
       apt-get install nginx curl redis-server zip unzip php7.4-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis -y
     elif [ "${DISTRO}" == "arch" ]; then
       pacman -Syu
-      pacman -Syu --noconfirm nginx curl redis-server zip unzip php7.4-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis
+      pacman -Syu --noconfirm --needed nginx curl redis-server zip unzip php7.4-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis
     elif { [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
       yum update -y
       yum install nginx curl redis-server zip unzip php7.4-fpm php-curl php-gd php-intl php-mbstring php-soap php-xml php-pear php-xmlrpc php-zip php-mysql php-imagick php-common php-json php-cgi php-redis -y
@@ -152,7 +152,7 @@ if [ ! -f "${WPCONFIG}" ]; then
     if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ]; }; then
       apt-get install mariadb-server -y
     elif [ "${DISTRO}" == "arch" ]; then
-      pacman -Syu --noconfirm mariadb
+      pacman -Syu --noconfirm --needed mariadb
     elif { [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ]; }; then
       yum install mariadb -y
     fi
