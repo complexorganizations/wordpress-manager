@@ -46,8 +46,6 @@ function installing-system-requirements() {
 
 WPCONFIG="/var/www/wp-config.php"
 WORDPRESS_DOWNLOAD_URL="https://wordpress.org/latest.tar.gz"
-REDIS_PLUGIN_URL="https://downloads.wordpress.org/plugin/redis-cache.2.0.17.zip"
-REDIS_PLUGIN_PATH="/var/www/html/wp-content/plugins/redis-cache.2.0.17.zip"
 NGINX_SITE_DEFAULT_CONFIG="/etc/nginx/sites-available/default"
 NGINX_GLOBAL_DEFAULT_CONFIG="/etc/nginx/nginx.conf"
 WP_CLI_UPDATE_URL="https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
@@ -97,9 +95,6 @@ if [ ! -f "${WPCONFIG}" ]; then
   function configure-redis() {
     if { [ "${DISTRO}" == "ubuntu" ] || [ "${DISTRO}" == "debian" ] || [ "${DISTRO}" == "raspbian" ] || [ "${DISTRO}" == "pop" ] || [ "${DISTRO}" == "kali" ] || [ "${DISTRO}" == "fedora" ] || [ "${DISTRO}" == "centos" ] || [ "${DISTRO}" == "rhel" ] || [ "${DISTRO}" == "arch" ] || [ "${DISTRO}" == "manjaro" ] || [ "${DISTRO}" == "alpine" ]; }; then
       sed -i "s|# bind 127.0.0.1;|bind 127.0.0.1;|" ${REDIS_CONFIG_PATH}
-      curl ${REDIS_PLUGIN_URL} --create-dirs -o ${REDIS_PLUGIN_PATH}
-      unzip ${REDIS_PLUGIN_PATH}
-      rm -f ${REDIS_PLUGIN_PATH}
     fi
     if pgrep systemd-journal; then
       systemctl enable redis
