@@ -167,10 +167,9 @@ if [ ! -f "${WPCONFIG}" ]; then
     MARIADB_PASSWORD="$(openssl rand -hex 15)"
     mysql -e "CREATE DATABASE ${MARIADB_DATABASE};"
     mysql -e "CREATE USER \"${MARIADB_USER}\"@\"${MYSQL_DB_IP}\" IDENTIFIED BY \"${MARIADB_PASSWORD}\";"
-    mysql -e "ALTER USER \"${MARIADB_USER}\"@\"${MYSQL_DB_IP}\" IDENTIFIED WITH mysql_native_password BY \"${MARIADB_PASSWORD}\";"
-    mysql -e "GRANT ALL ON \"${MARIADB_DATABASE}\".* TO \"${MARIADB_USER}\"@\"${MYSQL_DB_IP}\";"
+    mysql -e "GRANT ALL ON ${MARIADB_DATABASE}.* TO \"${MARIADB_USER}\"@\"${MYSQL_DB_IP}\";"
     # Change mysql root password
-    # mysql -e "ALTER USER \"${MYSQL_DB_USER}\"@\"${MYSQL_DB_IP}\" IDENTIFIED BY \"${MYSQL_DB_PASSWORD}\";"
+    mysql -e "ALTER USER \"${MYSQL_DB_USER}\"@\"${MYSQL_DB_IP}\" IDENTIFIED BY \"${MYSQL_DB_PASSWORD}\";"
     echo "MySQL Information"
     echo "IP Address: ${MYSQL_DB_IP}"
     echo "Port: ${MYSQL_DB_PORT}"
