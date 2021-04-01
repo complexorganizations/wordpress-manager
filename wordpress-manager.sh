@@ -141,6 +141,22 @@ if [ ! -f "${WPCONFIG}" ]; then
 
   # nginx
   configure-nginx
+  
+  function configure-php() {
+    if { [ "$DISTRO" == "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ] || [ "$DISTRO" == "pop" ] || [ "$DISTRO" == "kali" ] || [ "$DISTRO" == "fedora" ] || [ "$DISTRO" == "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "arch" ] || [ "$DISTRO" == "manjaro" ] || [ "$DISTRO" == "alpine" ]; }; then
+      sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 64M|" /etc/php/7.4/fpm/php.ini
+      sed -i "s|max_file_uploads = 20|max_file_uploads = 50|" /etc/php/7.4/fpm/php.ini
+    fi
+    if pgrep systemd-journal; then
+      systemctl enable php7.4-fpm
+      systemctl restart php7.4-fpm
+    else
+      service php7.4-fpm enable
+      service php7.4-fpm restart
+    fi
+  }
+
+  configure-php
 
   ## Function to install mysql
   function mysql-install() {
